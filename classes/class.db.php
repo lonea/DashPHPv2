@@ -1,16 +1,26 @@
 <?php
 
 /**
- * Product: DashDouga Framework
- * Developers: Avexweb
- * Website: http://avexweb.com
- * Email: help.desk@avexweb.com
+ * Product: DashPHP Framework
+ * Developers: CodeBox
+ * Website: http://codebox.ca
+ * Email: cs@codebox.ca
  * 
  * Unauthorized distribution of this script is prohibited
- * @copyright 2010 - Avexweb
+ * @copyright 2016 - Reliant-web
  */
 
-
+class phpmotion extends db{
+	public function GetAllVideos(){
+		$this->QueryTable("*", "", "videos", "");
+	}
+	
+	public function GetAllVideosByMemeberID($userid){
+		$this->QueryTable("*", array("user_id"=>$userid), "videos", "");
+	}
+}
+ 
+ 
 //This class will handle all the database transaction
 
 class db{
