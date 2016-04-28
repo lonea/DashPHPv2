@@ -13,9 +13,12 @@ $smarty->caching = true;
 $smarty->cache_lifetime = $cache_timer;
 
 require_once(INC_DIR."templateloader.php");
+//Jumpstart the database connection
+require_once(CLASS_DIR."class.db.php");
 
 //Jumpstart the email
-require_once(MAIN_DIR."./includes/libs/mail/swift/swift_required.php");
+//require_once(MAIN_DIR."./includes/libs/mail/swift/swift_required.php");
+
 
 
 

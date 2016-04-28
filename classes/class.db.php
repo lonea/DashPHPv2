@@ -14,10 +14,10 @@
 //This class will handle all the database transaction
 
 class db{
-    private static $settings_file = "configs/settings.db.php";
+    private $SettingsFile = "configs/settings.db.php";
     var $conn;
     var $result;
-    var $raw_result;
+    var $RawResult;
     var $keys;
     var $values;
     var $pconnect;
@@ -25,7 +25,7 @@ class db{
     var $debug = FALSE;
     
     function __construct(){
-        include($settings_file);
+        include($this->SettingsFile);
         
         $this->connect($db, $user, $pw, $server, $port);
     }
@@ -59,10 +59,10 @@ class db{
 		//Add additional query string options
         if ($opts != NULL) $sql .= " ".$opts;
         
-        if ($this->QueryMe($sql)){
-            $this->result = $query;
-            return true;
-        }
+		$query = $this->QueryMe($sql);
+		$query = $query->fetchAll( \PDO::FETCH_ASSOC);
+		$this->result = $query;
+		return true;
         
     } 
     
@@ -82,17 +82,15 @@ class db{
         
         if ($opts != NULL) $sql .= " ".$opts;
         
-        if ($this->query_me($sql)){
-            return TRUE;
-        }
+		$query = $this->QueryMe($sql);
+		$this->RawResult = $query;
     }   
     
     //This function perfoum a count(*) query
     //Return: value of count(*)
-    public function query_count($condition, $table, $opts){
+    public function QueryCount($condition, $table, $opts){
         
-        if ($condition == NULL){
-            
+        if ($condition == NULL){            
             $sql = "SELECT count(*) FROM $table";
         }
         else{
@@ -101,14 +99,12 @@ class db{
             $sql = "SELECT count(*) FROM $table WHERE $newconditions";    
         }
         
-        if ($opts != NULL){
-            $sql .= " ".$opts;
-        }        
+        if ($opts != NULL) $sql .= " ".$opts;
         
-        if ($this->query_me($sql)){
-            $count = mysql_result($this->raw_result, 0);
-            return $count;
-        }
+		$query = $this->QueryMe($sql);
+		$query = $query->fetch( \PDO::FETCH_ASSOC);
+		$count = $query["count(*)"];
+		return $count;
         
     }
     
@@ -129,7 +125,6 @@ class db{
 		try{
 			$query = $this->conn->prepare($sql);
 			$query->execute();
-			$query = $query->fetchAll( \PDO::FETCH_ASSOC);
 			return $query;
 		}catch(PDOException $e){
 			$this->error_report("Failed to run query: ".$e->getMessage());
@@ -224,7 +219,7 @@ class db{
     //This function connect to the db
     public function connect($db,$user,$pw,$server,$port){
 		try {
-			$this->conn = new PDO("mysql:host=$server;port=$port;dbname=$db", '$user', '$pw', array( PDO::ATTR_PERSISTENT => false));    	
+			$this->conn = new PDO("mysql:host=$server;port=$port;dbname=$db", "$user", "$pw", array( PDO::ATTR_PERSISTENT => false));    	
 			return true;
 		}catch(PDOException $e){
 			$this->error_report("Could not connect to database: ".$e->getMessage());
@@ -235,7 +230,7 @@ class db{
     //This function connect to the db with a persistent connection
     public function p_connect($db,$user,$pw,$server,$port){
 		try {
-			$this->conn = new PDO("mysql:host=$server;port=$port;dbname=$db", '$user', '$pw', array( PDO::ATTR_PERSISTENT => false));    	
+			$this->conn = new PDO("mysql:host=$server;port=$port;dbname=$db", "$user", "$pw", array( PDO::ATTR_PERSISTENT => false));    	
 			return true;
 		}catch(PDOException $e){
 			$this->error_report("Could not connect to database: ".$e->getMessage());
