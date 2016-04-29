@@ -1,5 +1,13 @@
 <?php
-
+/**
+ * Product: DashPHP Framework
+ * Developers: CodeBox
+ * Website: http://codebox.ca
+ * Email: cs@codebox.ca
+ * 
+ * Unauthorized distribution of this script is prohibited
+ * @copyright 2016 - Reliant-web
+ */
 class upload_functions{
     
     var $files_array; 

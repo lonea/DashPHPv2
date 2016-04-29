@@ -1,9 +1,13 @@
 <?php
-//
-// RW Framework 2.0
-// Developed by: Reliant-web
-// Revision 2.0
-//
+/**
+ * Product: DashPHP Framework
+ * Developers: CodeBox
+ * Website: http://codebox.ca
+ * Email: cs@codebox.ca
+ * 
+ * Unauthorized distribution of this script is prohibited
+ * @copyright 2016 - Reliant-web
+ */
 require('./init.php');
 require(BOOTS_DIR.'basicPages.php');
 $page = "contact";

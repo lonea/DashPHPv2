@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Product: DashPHP Framework
  * Developers: CodeBox
@@ -17,6 +16,71 @@ class phpmotion extends db{
 	
 	public function GetAllVideosByMemeberID($userid){
 		$this->QueryTable("*", array("user_id"=>$userid), "videos", "");
+	}
+	
+	public function LoginByEmail($email, $password){
+		try{
+			$sql = "SELECT count(*) FROM member_profile WHERE email_address = :email AND password = :password";
+			if ($this->debug == TRUE) echo $sql;
+			$query = $this->conn->prepare($sql);
+			$query->execute(array(":email"=>$email,":password"=>md5($password)));
+			$query = $query->fetch( \PDO::FETCH_ASSOC);
+			$count = $query["count(*)"];
+			if ($count == 1){
+				//logged in
+				$sql = "SELECT user_id, user_name, email_address  FROM member_profile WHERE email_address = :email AND password = :password";
+				if ($this->debug == TRUE) echo $sql;
+				$query = $this->conn->prepare($sql);
+				$query->execute(array(":email"=>$email,":password"=>md5($password)));
+				$query = $query->fetch( \PDO::FETCH_ASSOC);
+				
+				$_SESSION["loggedin"] = true;
+				$_SESSION["username"] = $query["user_name"];
+				$_SESSION["userid"] = $query["user_id"];
+				$_SESSION["email"] = $query["email_address"];
+				
+				return true;				
+			}
+			else return false;
+		
+		}catch(PDOException $e){
+			$this->error_report("Failed to run query: ".$e->getMessage());
+			return false;
+		}
+	}
+	
+	public function LoginByUsername($username, $password){
+		try{
+			$sql = "SELECT count(*) FROM member_profile WHERE user_name = :username AND password = :password";
+			if ($this->debug == TRUE) echo $sql;
+			$query = $this->conn->prepare($sql);
+			$query->execute(array(":username"=>$username,":password"=>md5($password)));
+			$query = $query->fetch( \PDO::FETCH_ASSOC);
+			$count = $query["count(*)"];
+			if ($count == 1){
+				//logged in
+				$sql = "SELECT user_id, user_name, email_address  FROM member_profile WHERE username = :username AND password = :password";
+				if ($this->debug == TRUE) echo $sql;
+				$query = $this->conn->prepare($sql);
+				$query->execute(array(":username"=>$username,":password"=>md5($password)));
+				$query = $query->fetch( \PDO::FETCH_ASSOC);
+				
+				$_SESSION["loggedin"] = true;
+				$_SESSION["username"] = $query["user_name"];
+				$_SESSION["userid"] = $query["user_id"];
+				$_SESSION["email"] = $query["email_address"];
+				
+				return true;				
+			}
+			else return false;
+		}catch(PDOException $e){
+			$this->error_report("Failed to run query: ".$e->getMessage());
+			return false;
+		}
+	}
+	
+	public function LogOut(){
+		unset($_SESSION["userid"], $_SESSION["loggedin"], $_SESSION["email"]);
 	}
 }
  
@@ -126,11 +190,8 @@ class db{
             //mysql_query("SET NAMES utf8");
             //mysql_query("SET CHARACTER SET utf8");            
         }
-                
-        
-        if ($this->debug == TRUE){
-            echo $sql;
-        }
+                        
+        if ($this->debug == TRUE) echo $sql;
         
 		try{
 			$query = $this->conn->prepare($sql);
@@ -153,6 +214,8 @@ class db{
         $values = $this->arraySet($this->values);
         
         $sql = "INSERT INTO $table ($column) VALUES ($values)";
+		if ($this->debug == TRUE) echo $sql;
+		
 		try{
 			$query = $this->conn->prepare($sql);
 			$query->execute();
@@ -183,7 +246,7 @@ class db{
             $newconditions = $this->expressionGen_AND($this->keys, $this->values);
             $sql = "UPDATE $table SET $expression WHERE $newconditions";                 
         }
-        
+        if ($this->debug == TRUE) echo $sql;
 		try{
 			$query = $this->conn->prepare($sql);
 			$query->execute();

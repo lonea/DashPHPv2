@@ -1,5 +1,9 @@
 <HTML>
 <HEAD>
-<TITLE>{$title} - {$Name}</TITLE>
+<TITLE>{$title} - {$username}</TITLE>
 </HEAD>
+
+{if $loggedin == true}
+	Hello {$username}}
+{/if}
 <BODY bgcolor="#ffffff">
